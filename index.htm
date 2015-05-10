@@ -29,7 +29,7 @@
 				var hue = (i / numCubes) * 0.4 - 0.3;
 				color.setHSL(hue, 1.0, 0.5);
 
-				var width = (24 - (24/numCubes) * i);
+				var width = (24 - (24/numCubes) * (i));
 				var material = new THREE.MeshLambertMaterial( { color: color, opacity: 0.40, transparent: true } );
 				var geometry = new THREE.BoxGeometry( width, 0.10, width );
 				var cube = new THREE.Mesh( geometry, material );
@@ -53,14 +53,14 @@
 			function render() {
 				requestAnimationFrame( render );
 
-				var time = Date.now() * 0.0015;
+				var time = Date.now() * 0.0010;
 				var i;
 
 				for ( i = (numCubes - 1); i > 0; i-- ) {
-					var p = (i/numCubes) * 0.1;
+					var p = (i/numCubes) * 0.2;
 
 					var cube = cubes[i-1];
-					cube.rotation.y += ((Math.sin(time) * p) + 0.01 * 0.5);
+					cube.rotation.y += ((Math.sin(time) * p) - 0.01 * 0.5);
 					
 					// var hue = (Math.sin(time) * 0.12) + 0.7;
 					// cube.material.color.setHSL(hue + (p*10) * .55, 1.0, 0.5);
