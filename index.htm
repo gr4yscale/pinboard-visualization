@@ -23,9 +23,14 @@
 			var cubes = [];
 			var numCubes = 90;
 
+			var color = new THREE.Color(0xffffff);
+
 			for ( i = 1; i < numCubes; i ++ ) {
-				var width = (16 - (16/numCubes) * i);
-				var material = new THREE.MeshLambertMaterial( { color: "red" } );
+				var hue = (i / numCubes) * 0.4 - 0.3;
+				color.setHSL(hue, 1.0, 0.5);
+
+				var width = (24 - (24/numCubes) * i);
+				var material = new THREE.MeshLambertMaterial( { color: color, opacity: 0.40, transparent: true } );
 				var geometry = new THREE.BoxGeometry( width, 0.10, width );
 				var cube = new THREE.Mesh( geometry, material );
 				
@@ -38,49 +43,34 @@
 				cubes.push(cube);
 			}
 
-			// var planeGeometry = new THREE.PlaneGeometry(20, 20);
-			// var planeMaterial = new THREE.MeshLambertMaterial({	
-			// 	color: 0xcccccc
-			// });
-	
-			// var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-			// plane.receiveShadow = true;
-			// scene.add(plane);
-
 			scene.add(spotLight);
 
-			positionObjects();
+			camera.position.y = 13;
+			camera.position.z = 24;
+			camera.rotation.x = -0.4;
+
 
 			function render() {
 				requestAnimationFrame( render );
 
-				// cube.rotation.x += (Math.sin(time) * 0.05);
-				// cube.rotation.y += (Math.sin(time) * 0.05);
-				// cube.position.y += (Math.cos(time) * 0.1);
-
 				var time = Date.now() * 0.0015;
+				var i;
 
-				for ( i = 0; i < numCubes-1; i ++ ) {
+				for ( i = (numCubes - 1); i > 0; i-- ) {
+					var p = (i/numCubes) * 0.1;
 
-					var p = (i/numCubes-1) * 0.2;
-
-					var cube = cubes[i];
-					cube.rotation.y += ((Math.sin(time) * p) * 0.5);
+					var cube = cubes[i-1];
+					cube.rotation.y += ((Math.sin(time) * p) + 0.01 * 0.5);
+					
+					// var hue = (Math.sin(time) * 0.12) + 0.7;
+					// cube.material.color.setHSL(hue + (p*10) * .55, 1.0, 0.5);
 				}
 
 				renderer.render( scene, camera );
 			}
 
-			function positionObjects() {
-				// plane.rotation.x = -0.5 * Math.PI;
-				// plane.position.y = -2;
-
-				camera.position.y = 14;
-				camera.position.z = 20;
-				camera.rotation.x = -0.4;
-			}
-
 			render();
+
 		</script>
 	</body>
 </html>
