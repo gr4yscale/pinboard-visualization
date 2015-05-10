@@ -10,33 +10,43 @@
 		<script src="js/three.js"></script>
 		<script>
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
-
-			var geometry = new THREE.CubeGeometry( 4, 2, 6 );
-			var material = new THREE.MeshLambertMaterial( { color: "red" } );
-
-			var cube = new THREE.Mesh( geometry, material );
-			cube.castShadow = true;
-
 			var spotLight = new THREE.SpotLight(0xffffff, 2.0, -2.5);
-			spotLight.position.set(10, 20, 20);
+			spotLight.position.set( 0, 40, 15);
 			spotLight.castShadow = true;
 
-			var planeGeometry = new THREE.PlaneGeometry(20, 20);
-			var planeMaterial = new THREE.MeshLambertMaterial({	
-				color: 0xcccccc
-			});
-	
-			var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-			plane.receiveShadow = true;
+			var cubes = [];
+			var numCubes = 90;
 
-			scene.add(cube);
-			scene.add(plane);
+			for ( i = 1; i < numCubes; i ++ ) {
+				var width = (16 - (16/numCubes) * i);
+				var material = new THREE.MeshLambertMaterial( { color: "red" } );
+				var geometry = new THREE.BoxGeometry( width, 0.10, width );
+				var cube = new THREE.Mesh( geometry, material );
+				
+				cube.position.y = 0.2 * i;
+				cube.rotation.y = 0.50;
+
+				cube.castShadow = true;
+				
+				scene.add(cube);
+				cubes.push(cube);
+			}
+
+			// var planeGeometry = new THREE.PlaneGeometry(20, 20);
+			// var planeMaterial = new THREE.MeshLambertMaterial({	
+			// 	color: 0xcccccc
+			// });
+	
+			// var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+			// plane.receiveShadow = true;
+			// scene.add(plane);
+
 			scene.add(spotLight);
 
 			positionObjects();
@@ -44,19 +54,30 @@
 			function render() {
 				requestAnimationFrame( render );
 
-				var time = Date.now() * 0.001;
+				// cube.rotation.x += (Math.sin(time) * 0.05);
+				// cube.rotation.y += (Math.sin(time) * 0.05);
+				// cube.position.y += (Math.cos(time) * 0.1);
 
-				cube.rotation.x += (Math.sin(time) * 0.05);
-				cube.rotation.y += (Math.sin(time) * 0.05);
-				cube.position.y += (Math.cos(time) * 0.1);
+				var time = Date.now() * 0.0015;
+
+				for ( i = 0; i < numCubes-1; i ++ ) {
+
+					var p = (i/numCubes-1) * 0.2;
+
+					var cube = cubes[i];
+					cube.rotation.y += ((Math.sin(time) * p) * 0.5);
+				}
 
 				renderer.render( scene, camera );
 			}
 
 			function positionObjects() {
-				plane.rotation.x = -0.5 * Math.PI;
-				plane.position.y = -2;
-				camera.position.z = 15;
+				// plane.rotation.x = -0.5 * Math.PI;
+				// plane.position.y = -2;
+
+				camera.position.y = 14;
+				camera.position.z = 20;
+				camera.rotation.x = -0.4;
 			}
 
 			render();
