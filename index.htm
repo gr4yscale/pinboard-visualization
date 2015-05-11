@@ -9,6 +9,7 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.js"></script>
+		<script src="js/OrbitControls.js"></script>
 		<script>
 			params = new function() {
 				this.opacity = 0.25;
@@ -19,17 +20,20 @@
 				this.hueOffset = 0.3;
 				this.twistSpeed = 0.15;
 				this.rotationSpeed = 0.01;
-				this.lightYPosition = 40;
+				this.lightYPosition = 120;
 			};
 
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
+			var controls = new THREE.OrbitControls( camera );
+			controls.damping = 0.2;
+
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
-			var spotLight = new THREE.SpotLight(0xffffff, 2.0, -2.5);
+			var spotLight = new THREE.SpotLight( 0xffffff, 2.0, -2.5 );
 			spotLight.castShadow = true;
 
 			var cubes = [];
@@ -49,12 +53,13 @@
 
 			scene.add(spotLight);
 
-			camera.position.y = 13;
+			camera.position.y = 24;
 			camera.position.z = 24;
-			camera.rotation.x = -0.4;
+			camera.lookAt(scene.position);
 
 			function render() {
 				requestAnimationFrame( render );
+				// controls.update();
 
 				var time = Date.now() * 0.0010;
 
@@ -89,7 +94,7 @@
 				gui.add(controlObject, 'hueOffset', 0, 1).step(0.01);
 				gui.add(controlObject, 'twistSpeed', 0.01, 0.8);
 				gui.add(controlObject, 'rotationSpeed', 0, 0.1).step(0.01);
-				gui.add(controlObject, 'lightYPosition', 0.01, 100);
+				gui.add(controlObject, 'lightYPosition', 0.01, 360);
 			}
 
 			addParamsGUI(params);
