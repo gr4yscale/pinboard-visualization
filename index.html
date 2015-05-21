@@ -9,105 +9,14 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.js"></script>
+		<script src="js/params.js"></script>
 		<script src="js/OrbitControls.js"></script>
+		<script src="js/gfx.js"></script>
 
 		<script>
-			params = new function() {
-				this.opacity = 0.25;
-				this.width = 1.0;
-				this.height = 0.2;
-				this.boxThickness = 1.0;
-				this.hueRange = 0.35;
-				this.hueOffset = 0.3;
-				this.twistSpeed = 0.15;
-				this.rotationSpeed = 0.01;
-				this.lightYPosition = 120;
-			};
-
-			var camera, scene, renderer, spotlight, controls, cubes = [], numCubes = 90;
-
 			addParamsGUI(params);
 			init();
 			render();
-
-			function init() {
-
-				scene = new THREE.Scene();
-
-				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-				camera.position.y = 24;
-				camera.position.z = 24;
-				camera.lookAt(scene.position);
-
-				controls = new THREE.OrbitControls( camera );
-				controls.damping = 0.2;
-
-				// world
-
-				for ( i = 1; i < numCubes; i ++ ) {
-					var width = 24 - ((24 / numCubes) * i);
-					var material = new THREE.MeshLambertMaterial( { color: 0xffffff, opacity: 0.25, transparent: true } );
-
-					var geometry = new THREE.BoxGeometry( width, 0.10, width );
-					var cube = new THREE.Mesh( geometry, material );
-					
-					cube.position.y = 0.2 * i;
-					
-					scene.add(cube);
-					cubes.push(cube);
-				}
-
-				// lights
-
-				spotLight = new THREE.SpotLight( 0xffffff, 2.0, -2.5 );
-				spotLight.castShadow = true;
-				scene.add(spotLight);
-
-				// render
-
-				renderer = new THREE.WebGLRenderer();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
-			}
-
-			function render() {
-				requestAnimationFrame( render );
-
-				var time = Date.now() * 0.0010;
-
-				for (var i = (numCubes - 1); i > 0; i-- ) {
-					var cube = cubes[i-1];
-					cube.rotation.y += ((Math.sin(time) * (i/numCubes) * params.twistSpeed) - params.rotationSpeed * 0.5);
-
-					cube.scale.x = params.width;
-					cube.scale.z = params.width;
-					cube.scale.y = params.boxThickness;
-
-					cube.position.y = params.height * i;
-				
-					var hue = (i / numCubes) * params.hueRange - params.hueOffset;
-					cube.material.color.setHSL(hue, 1.0, 0.5);
-					cube.material.opacity = params.opacity;
-				}
-
-				spotLight.position.set( 0, params.lightYPosition, 0);
-
-				renderer.render( scene, camera );
-			}
-
-			function addParamsGUI(controlObject) {
-				var gui = new dat.GUI();
-				gui.add(controlObject, 'opacity', 0.1, 1);
-				gui.add(controlObject, 'width', 0.001, 10);
-				gui.add(controlObject, 'height', 0.02, 3).step(0.01);
-				gui.add(controlObject, 'boxThickness', 0.01, 10);
-				gui.add(controlObject, 'hueRange', 0.0, 1);
-				gui.add(controlObject, 'hueOffset', 0, 1).step(0.01);
-				gui.add(controlObject, 'twistSpeed', 0.0, 0.8);
-				gui.add(controlObject, 'rotationSpeed', 0.0, 0.1).step(0.01);
-				gui.add(controlObject, 'lightYPosition', 0.01, 360);
-			}
-
 		</script>
 	</body>
 </html>
