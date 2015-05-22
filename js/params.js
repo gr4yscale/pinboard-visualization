@@ -7,7 +7,7 @@ params = new function() {
 	this.hueOffset = 0.3;
 	this.twistSpeed = 0.15;
 	this.rotationSpeed = 0.01;
-	this.lightYPosition = 120;
+	this.lightYPosition = 360;
 };
 
 function addParamsGUI(controlObject) {

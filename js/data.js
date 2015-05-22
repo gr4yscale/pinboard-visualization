@@ -1,5 +1,5 @@
 var request = new XMLHttpRequest();
-request.open('GET', '/pinboard/timeSeries');
+request.open('GET', 'pinboard/timeSeries/Nov%2001%202014/May%2022%202015/200');
 request.setRequestHeader('Content-Type', 'application/json');
 
 request.onload = function() {
