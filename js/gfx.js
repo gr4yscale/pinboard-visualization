@@ -17,8 +17,10 @@ function initThree(theData) {
 
 	numCubes = theData["tags"].length;
 
+	var lastDayIndex = theData["dayCount"];
+
 	for ( i = 1; i < numCubes; i ++ ) {
-		var width = theData["counts"]["200"][i]; // be lame and use an arbitrary day from time series dataset for now
+		var width = theData["timeSeries"][lastDayIndex][i]; // be lame and use an arbitrary day from time series dataset for now
 		var material = new THREE.MeshLambertMaterial( { color: 0xffffff, opacity: 0.25, transparent: true } );
 
 		var geometry = new THREE.BoxGeometry( width, 0.10, width );
