@@ -1,6 +1,6 @@
-var camera, scene, renderer, spotlight, controls, cubes = [], numCubes = 90;
+var camera, scene, renderer, spotlight, controls, cubes = [], numCubes;
 
-function init() {
+function initThree(theData) {
 
 	scene = new THREE.Scene();
 
@@ -15,8 +15,10 @@ function init() {
 
 	// world
 
+	numCubes = theData["tags"].length;
+
 	for ( i = 1; i < numCubes; i ++ ) {
-		var width = 24 - ((24 / numCubes) * i);
+		var width = theData["counts"]["200"][i]; // be lame and use an arbitrary day from time series dataset for now
 		var material = new THREE.MeshLambertMaterial( { color: 0xffffff, opacity: 0.25, transparent: true } );
 
 		var geometry = new THREE.BoxGeometry( width, 0.10, width );

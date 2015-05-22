@@ -7,25 +7,13 @@
 		</style>
 	</head>
 	<body>
+		<script src="js/EventEmitter.min.js"></script>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.js"></script>
 		<script src="js/params.js"></script>
 		<script src="js/OrbitControls.js"></script>
-		<script src="js/EventEmitter.min.js"></script>
 		<script src="js/gfx.js"></script>
 		<script src="js/data.js"></script>
-
-		<script>
-			var ee = new EventEmitter();
-
-			addParamsGUI(params);
-
-			function setupGFX() {
-				init();
-				render();
-			}
-
-			ee.on('dataLoaded', setupGFX);
-		</script>
+		<script src="js/main.js"></script>
 	</body>
 </html>
