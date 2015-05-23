@@ -1,13 +1,14 @@
 params = new function() {
 	this.opacity = 0.25;
-	this.width = 1.0;
-	this.height = 0.2;
+	this.width = 4.0;
+	this.height = 1.75;
 	this.boxThickness = 1.0;
 	this.hueRange = 0.35;
-	this.hueOffset = 0.3;
+	this.hueOffset = 0.41;
 	this.twistSpeed = 0.15;
 	this.rotationSpeed = 0.01;
-	this.lightYPosition = 360;
+	this.lightYPosition = 600;
+	this.pause = false;
 };
 
 function addParamsGUI(controlObject) {
@@ -20,5 +21,6 @@ function addParamsGUI(controlObject) {
 	gui.add(controlObject, 'hueOffset', 0, 1).step(0.01);
 	gui.add(controlObject, 'twistSpeed', 0.0, 0.8);
 	gui.add(controlObject, 'rotationSpeed', 0.0, 0.1).step(0.01);
-	gui.add(controlObject, 'lightYPosition', 0.01, 360);
+	gui.add(controlObject, 'lightYPosition', 0.01, 800);
+	gui.add(controlObject, 'pause');
 }
