@@ -1,4 +1,4 @@
-var camera, scene, renderer, spotlight, controls, cubes = [], numCubes, lastDayIndex = 1, data;
+var camera, scene, renderer, spotlight, controls, data;
 
 function initThree(theData) {
 
@@ -7,8 +7,8 @@ function initThree(theData) {
 	scene = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	camera.position.y = 130;
-	camera.position.z = 130;
+	camera.position.y = 20;
+	camera.position.z = 60;
 
 	camera.lookAt(scene.position);
 
@@ -18,19 +18,8 @@ function initThree(theData) {
 
 	// world
 
-	numCubes = data["tags"].length;
-
-	for ( i = 1; i < numCubes; i ++ ) {
-		var material = new THREE.MeshLambertMaterial( { color: 0xffffff, opacity: 0.25, transparent: true } );
-
-		var geometry = new THREE.BoxGeometry( 1, 0.10, 1 );
-		var cube = new THREE.Mesh( geometry, material );
-		
-		cube.position.y = 0.2 * i;
-		
-		scene.add(cube);
-		cubes.push(cube);
-	}
+	//use data["tags"].length for number of tags in future
+	createPlot(20);
 
 	// lights
 
@@ -47,33 +36,50 @@ function initThree(theData) {
 
 function render() {
 	requestAnimationFrame( render );
-
-	var time = Date.now() * 0.0010;
-
-	if (params.pause === false) {
-		lastDayIndex += 0.2;
-		if (lastDayIndex > data["dayCount"]) lastDayIndex = data["dayCount"];
-	}
-
-	for (var i = (numCubes - 1); i > 0; i-- ) {
-
-		var cube = cubes[i-1];
-
-		var width = data["timeSeries"][Math.floor(lastDayIndex)][i]; // be lame and use an arbitrary day from time series dataset for now
-
-		cube.scale.x = width * params.width;
-		cube.scale.z = width * params.width;
-		cube.scale.y = params.boxThickness;
-
-		cube.position.y = params.height * i;
-		cube.rotation.y = i * 0.1;
-
-		var hue = (i / numCubes) * params.hueRange - params.hueOffset;
-		cube.material.color.setHSL(hue, 1.0, 0.5);
-		cube.material.opacity = params.opacity;
-	}
-
-	spotLight.position.set( 0, params.lightYPosition, 0);
-
+	spotLight.position.set( 0, params.lightYPosition, 100);
 	renderer.render( scene, camera );
+}
+
+function createPlot(numTags) {
+
+	for (j = 1; j < numTags; j++) {
+
+		var pts = [];
+
+	    for (i = 1; i < 180 - 1; i++) { // hardcoding sample count for now
+	    	var postCount = data["timeSeries"][i][j];
+	    	pts.push(new THREE.Vector3((i*4.0) - 400, postCount - 60, (-j * 6))); // silly magic numbers to position scene correctly. fix later.
+	    }
+
+	    var spline =  new THREE.SplineCurve3( pts );
+
+		var extrudeSettings = {
+			steps			: 6000,
+			bevelEnabled	: false,
+			extrudePath		: spline
+		};
+
+		var rectShape = rectangleShape(6, 0.5);
+		var geometry = new THREE.ExtrudeGeometry( rectShape, extrudeSettings );
+		var material = new THREE.MeshLambertMaterial( { wireframe: false } );
+
+		var hue = (j / 10.0);
+		material.color.setHSL(hue, 1.0, 0.5);
+		material.opacity = 0.25;
+
+		var mesh = new THREE.Mesh( geometry, material );
+		scene.add(mesh);
+	}
+}
+
+function rectangleShape(rectLength, rectWidth) {
+
+	var rectShape = new THREE.Shape();
+	rectShape.moveTo( 0,0 );
+	rectShape.lineTo( 0, rectWidth );
+	rectShape.lineTo( rectLength, rectWidth );
+	rectShape.lineTo( rectLength, 0 );
+	rectShape.lineTo( 0, 0 );
+
+	return rectShape;
 }
