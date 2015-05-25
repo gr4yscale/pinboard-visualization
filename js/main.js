@@ -1,6 +1,6 @@
 var ee = new EventEmitter();
 
-addParamsGUI(params);
+//addParamsGUI(params);
 
 function setup(theData) {
 	initThree(theData);
