@@ -1,4 +1,4 @@
-var camera, scene, renderer, spotlight, controls, data, sampleCount, tagCount, zScale, xScale, xOffset;
+var camera, scene, renderer, spotlight, controls, data, sampleCount, tagCount, zScale, xScale, xOffset, xMax, yMax, zMax;
 
 function initThree(theData) {
 
@@ -7,8 +7,8 @@ function initThree(theData) {
 	scene = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	camera.position.x = -159;
-	camera.position.y = -49;
+	camera.position.x = 50;
+	camera.position.y = 25;
 	camera.position.z = 157;
 	camera.rotation.x = -0.08246939570769404;
 	camera.rotation.y = -0.6113956566440716;
@@ -20,11 +20,14 @@ function initThree(theData) {
 
 	// global variables for world (fix later)
 
-	sampleCount = 180;
-	tagCount = 20; //use data["tags"].length for number of tags in future
-	zScale = 6.0;
-	xScale = 2.0;
-	xOffset = -200;
+	sampleCount = 200;
+	tagCount = 40; //use data["tags"].length for number of tags in future
+	zScale = 4.0;
+	xScale = 1.0;
+	xOffset = -(sampleCount / 2);
+	xMax = (sampleCount - 1) * xScale;
+	yMax = 160;
+	zMax = (tagCount - 1) * zScale;
 
 	createPlot();
 	setupAxisLines();
@@ -50,8 +53,8 @@ function createPlot() {
 
 		var pts = [];
 
-	    for (i = 1; i < sampleCount - 1; i++) { // hardcoding sample count for now
-	    	var postCount = data["timeSeries"][i][j];
+	    for (i = 0; i < sampleCount; i++) { // hardcoding sample count for now
+	    	var postCount = data["timeSeries"][i+1][j];
 	    	pts.push(new THREE.Vector3((i * xScale) + xOffset, postCount, (j * zScale))); // silly magic numbers to position scene correctly. fix later.
 	    }
 
@@ -63,11 +66,11 @@ function createPlot() {
 			extrudePath		: spline
 		};
 
-		var rectShape = rectangleShape(zScale, 0.5);
+		var rectShape = rectangleShape(zScale, 0.25);
 		var geometry = new THREE.ExtrudeGeometry( rectShape, extrudeSettings );
 		var material = new THREE.MeshLambertMaterial( { wireframe: false} );
 
-		var hue = (j / 10.0);
+		var hue = (j / tagCount);
 		material.color.setHSL(hue, 0.8, 0.5);
 
 		var mesh = new THREE.Mesh( geometry, material );
@@ -93,39 +96,59 @@ function setupAxisLines() {
 		color: 0x888888,
 	});
 
-    for (i = 0; i < sampleCount - 1; i++) {
+    for (x = 0; x < sampleCount; x++) {
 
-    	// yy
+	    // xy plane
 		var geometry = new THREE.Geometry();
 		geometry.vertices.push(
-			new THREE.Vector3( (i * xScale) + xOffset, 0, 0 ),
-			new THREE.Vector3( (i * xScale) + xOffset, sampleCount, 0 )
+			new THREE.Vector3( (x * xScale) + xOffset, 0, 0 ),
+			new THREE.Vector3( (x * xScale) + xOffset, yMax, 0 )
 		);
 		scene.add( new THREE.Line( geometry, lineMaterial) );
 
-		// yx
+		// xz plane
 		var geometry = new THREE.Geometry();
 		geometry.vertices.push(
-			new THREE.Vector3( xOffset, i, 0 ),
-			new THREE.Vector3( 160, i, 0 )
-		);
-		scene.add( new THREE.Line( geometry, lineMaterial) );
-
-		// z
-		var geometry = new THREE.Geometry();
-		geometry.vertices.push(
-			new THREE.Vector3( (i * xScale) + xOffset, 0, 0 ),
-			new THREE.Vector3( (i * xScale) + xOffset, 0, tagCount * zScale ) // 120 derived from 20 * 6 (tagCount 20, 6 being the scale)
+			new THREE.Vector3( (x * xScale) + xOffset, 0, 0 ),
+			new THREE.Vector3( (x * xScale) + xOffset, 0, zMax )
 		);
 		scene.add( new THREE.Line( geometry, lineMaterial) );
     }
 
-    // zx
-	for (j = 0; j < tagCount; j++) {
+	for (y = 0; y < yMax; y++) {
+
+		// yx plane
 		var geometry = new THREE.Geometry();
 		geometry.vertices.push(
-			new THREE.Vector3( xOffset, 0, j * zScale ),
-			new THREE.Vector3( 160, 0, j * zScale )
+			new THREE.Vector3( xOffset, y, 0 ),
+			new THREE.Vector3( xMax + xOffset, y, 0 )
+		);
+		scene.add( new THREE.Line( geometry, lineMaterial) );
+
+		// yz plane
+		var geometry = new THREE.Geometry();
+		geometry.vertices.push(
+			new THREE.Vector3( xMax + xOffset, y, 0 ),
+			new THREE.Vector3( xMax + xOffset, y, zMax )
+		);
+		scene.add( new THREE.Line( geometry, lineMaterial) );
+	}
+
+	for (zx = 0; zx < tagCount; zx++) {
+
+		// zx plane
+		var geometry = new THREE.Geometry();
+		geometry.vertices.push(
+			new THREE.Vector3( xOffset, 0, zx * zScale ),
+			new THREE.Vector3( xMax + xOffset, 0, zx * zScale )
+		);
+		scene.add( new THREE.Line( geometry, lineMaterial) );
+
+		// zy plane
+		var geometry = new THREE.Geometry();
+		geometry.vertices.push(
+			new THREE.Vector3( xMax + xOffset, 0, zx * zScale ),
+			new THREE.Vector3( xMax + xOffset, yMax, zx * zScale )
 		);
 		scene.add( new THREE.Line( geometry, lineMaterial) );
 	}
@@ -144,7 +167,7 @@ function setupLights() {
     directionalLightAbove.shadowCameraBottom = -2000;
 
     directionalLightAbove.distance = 0;
-    directionalLightAbove.intensity = 1.9;
+    directionalLightAbove.intensity = 1.6;
     directionalLightAbove.shadowMapHeight = 1024;
     directionalLightAbove.shadowMapWidth = 1024;
 
@@ -159,7 +182,7 @@ function setupLights() {
     directionalLightUnderneath.shadowCameraBottom = -2000;
 
     directionalLightUnderneath.distance = 0;
-    directionalLightUnderneath.intensity = 0.8;
+    directionalLightUnderneath.intensity = 0.6;
     directionalLightUnderneath.shadowMapHeight = 1024;
     directionalLightUnderneath.shadowMapWidth = 1024;
 
