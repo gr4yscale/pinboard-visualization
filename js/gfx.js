@@ -32,6 +32,7 @@ function initThree(theData) {
 	createPlot();
 	setupAxisLines();
 	setupLights();
+	setupXYAxisText();
 
 	// render
 
@@ -186,6 +187,50 @@ function setupLights() {
     directionalLightUnderneath.shadowMapHeight = 1024;
     directionalLightUnderneath.shadowMapWidth = 1024;
 
-    scene.add(directionalLightAbove);
-    scene.add(directionalLightUnderneath);
+    scene.add( directionalLightAbove );
+    scene.add( directionalLightUnderneath );
+}
+
+function createAxisTextMesh(text) {
+
+	var options = {
+		size: 0.8,
+		height: 0.03,
+		font: "optimer",
+		style: 'normal',
+		weight: 'bold',
+		bevelThickness: 0,
+		bevelSize: 0,
+		bevelSegments: 0,
+		bevelEnabled: false,
+		curveSegments: 8,
+		steps: 1
+	};
+
+    var meshMaterial = new THREE.MeshLambertMaterial( {color: 0x1BACFF } );
+	var geometry = new THREE.TextGeometry( text, options );
+	var textMesh = new THREE.Mesh( geometry, meshMaterial );
+
+	return textMesh;
+}
+
+function setupXYAxisText() {
+
+	var rotation = new THREE.Vector3( 0, 0, 0 );
+
+	for (y = 0; y < yMax; y++) {
+		var textMesh = createAxisTextMesh( y );
+		textMesh.position.x = xOffset - 2;
+		textMesh.position.y = y;
+		scene.add(textMesh);
+	}
+
+	for (x = 0; x < sampleCount; x++) {
+		var textMesh = createAxisTextMesh( x );
+		textMesh.position.x = ((x + 1) * xScale) + xOffset - 2;
+		textMesh.position.z = zMax + 1;
+		textMesh.rotation.z = -0.5 * Math.PI;
+		textMesh.rotation.x = -0.5 * Math.PI;
+		scene.add(textMesh);
+	}
 }
