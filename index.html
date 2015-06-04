@@ -9,19 +9,18 @@
 		</style>
 	</head>
 	<body>
-		<script src="js/jquery-2.1.4.js"></script>
-		<script src="js/underscore.js"></script>
-		<script src="js/backbone.js"></script>
-		<script src="js/EventEmitter.min.js"></script>
-		<script src="js/three.js"></script>
-		<script src="js/dat.gui.js"></script>
-		<script src="js/params.js"></script>
-		<script src="js/OrbitControls.js"></script>
+		<script src="js/lib/jquery-2.1.4.js"></script>
+		<script src="js/lib/underscore.js"></script>
+		<script src="js/lib/backbone.js"></script>
+		<script src="js/lib/EventEmitter.min.js"></script>
+		<script src="js/lib/three.js"></script>
+		<script src="js/lib/dat.gui.js"></script>
+		<script src="js/lib/OrbitControls.js"></script>
+		
+    <script src="js/params.js"></script>
 		<script src="js/fonts/optimer_regular.typeface.js"></script>
 		<script src="js/fonts/optimer_bold.typeface.js"></script>
 		<script src="js/gfx.js"></script>
-		<script src="js/data.js"></script>
-		<script src="js/main.js"></script>
 
 		<div id="tag-selection-overlay">
 			<div class="tag-selection-list"></div>
@@ -30,11 +29,13 @@
 		<script type="text/template" id="tag-list-item-tmpl">
 		  <div style="display:inline-block">
 		    <input type="checkbox" id="checkbox_<%=name%>" />
-		    <label for="checkbox_<%=name%>"><%=name%></label>
-		  </div>
+        <label for="checkbox_<%=name%>"><%=name%></label>
+      </div>
 		</script>
 
 		<script src="js/tag-selection.js"></script>
+		<script src="js/data.js"></script>
+		<script src="js/main.js"></script>
 
 	</body>
 </html>
