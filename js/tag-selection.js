@@ -2,7 +2,8 @@ var TagModel = Backbone.Model.extend({
   defaults: {
     id: null,
     name: 'aTagName',
-    tagCount: null
+    tagCount: null,
+    checked: 'checked'
   }
 });
 
@@ -33,8 +34,8 @@ var TagsListView = Backbone.View.extend({
     var $list = this.$('div.tag-selection-list').empty();
 
     this.collection.each(function(model) {
-    var item = new TagsListItemView({model: model});
-    $list.append(item.render().$el);
+      var item = new TagsListItemView({model: model});
+      $list.append(item.render().$el);
     }, this);
 
     return this;
@@ -44,12 +45,4 @@ var TagsListView = Backbone.View.extend({
 var tagsList = new TagsCollection();
 var tagsView = new TagsListView({collection: tagsList});
 
-tagsList.add([
-  {name: "zsd fhjh"},
-  {name: "ggg a"},
-  {name: "eeee fff"},
-  {name: "asdfs sadf"},
-  {name: "gsdg sadf "},
-  {name: "sadlfkj dsadf"},
-  {name: "glasdf ssd"},
-]);
+
