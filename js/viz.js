@@ -39,7 +39,7 @@ PinViz.Viz = Backbone.View.extend({
     this._setupLights();
     this._setupPlotGeometry();
     this._setupAxisLines();
-    this._setupXYAxisText();
+    //this._setupXYAxisText();
     this._animate();
   },
 
