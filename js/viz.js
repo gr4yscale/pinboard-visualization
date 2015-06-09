@@ -3,7 +3,7 @@ var PinViz = PinViz || {};
 PinViz.Viz = Backbone.View.extend({
 
   initialize : function() {
-    _.bindAll(this, 'render', 'setupScene', '_resetSceneIfNeeded', '_animate', '_setupPlotGeometry', '_setupLights', '_setupAxisLines', '_addLine', '_setupXYAxisText');
+    _.bindAll(this, 'render', 'setupScene', '_resetSceneIfNeeded', '_animate', '_setupPlotGeometry', '_setupLights', '_setupAxisLines', '_setupXYAxisText');
     this.tagMeshes = [];
     this.axisLines = [];
     this.axisTextMeshes = [];
@@ -140,6 +140,7 @@ PinViz.Viz = Backbone.View.extend({
 
   _setupAxisLines : function() {
 
+      // refactor this method later
       var sampleCount = this.model.get('sampleCount');
       var tagCount = this.model.get('tagCount');
       var xOffset = this.model.get('xOffset');
@@ -149,75 +150,106 @@ PinViz.Viz = Backbone.View.extend({
       var yMax = this.model.get('yMax');
       var zMax = this.model.get('zMax');
 
+      var lineMaterial = new THREE.LineBasicMaterial({
+        color: 0x888888,
+      });
+
+      var bufferGeometryXY = new THREE.BufferGeometry();
+      var bufferGeometryXZ = new THREE.BufferGeometry();
+      var bufferGeometryYX = new THREE.BufferGeometry();
+      var bufferGeometryYZ = new THREE.BufferGeometry();
+      var bufferGeometryZX = new THREE.BufferGeometry();
+      var bufferGeometryZY = new THREE.BufferGeometry();
+      var verticesXY = new Float32Array( sampleCount * 6 );
+      var verticesXZ = new Float32Array( sampleCount * 6 );
+      var verticesYX = new Float32Array( yMax * 6 );
+      var verticesYZ = new Float32Array( yMax * 6 );
+      var verticesZX = new Float32Array( tagCount * 6 );
+      var verticesZY = new Float32Array( tagCount * 6 );
+
       for (x = 0; x < sampleCount; x++) {
 
         // xy plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( (x * xScale) + xOffset, 0, 0 ),
-          new THREE.Vector3( (x * xScale) + xOffset, yMax, 0 )
-        );
-        this._addLine(geometry);
+        verticesXY[x*6] = (x * xScale) + xOffset; // we multiply by 6 because we have 2 points for each line with 3 components per point
+        verticesXY[x*6+1] = 0;
+        verticesXY[x*6+2] = 0;
+        verticesXY[x*6+3] = (x * xScale) + xOffset;
+        verticesXY[x*6+4] = yMax;
+        verticesXY[x*6+5] = 0;
 
         // xz plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( (x * xScale) + xOffset, 0, 0 ),
-          new THREE.Vector3( (x * xScale) + xOffset, 0, zMax )
-        );
-        this._addLine(geometry);
+        verticesXZ[x*6] = (x * xScale) + xOffset;
+        verticesXZ[x*6+1] = 0;
+        verticesXZ[x*6+2] = 0;
+        verticesXZ[x*6+3] = (x * xScale) + xOffset;
+        verticesXZ[x*6+4] = 0;
+        verticesXZ[x*6+5] = zMax;
       }
 
       for (y = 0; y < yMax; y++) {
 
         // yx plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( xOffset, y, 0 ),
-          new THREE.Vector3( xMax + xOffset, y, 0 )
-        );
-        this._addLine(geometry);
+        verticesYX[y*6] = xOffset;
+        verticesYX[y*6+1] = y;
+        verticesYX[y*6+2] = 0;
+        verticesYX[y*6+3] = xMax + xOffset;
+        verticesYX[y*6+4] = y;
+        verticesYX[y*6+5] = 0;
 
         // yz plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( xMax + xOffset, y, 0 ),
-          new THREE.Vector3( xMax + xOffset, y, zMax )
-        );
-        this._addLine(geometry);
+        verticesYZ[y*6] = xMax + xOffset;
+        verticesYZ[y*6+1] = y;
+        verticesYZ[y*6+2] = 0;
+        verticesYZ[y*6+3] = xMax + xOffset;
+        verticesYZ[y*6+4] = y;
+        verticesYZ[y*6+5] = zMax;
       }
 
       for (zx = 0; zx < tagCount; zx++) {
 
         // zx plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( xOffset, 0, zx * zScale ),
-          new THREE.Vector3( xMax + xOffset, 0, zx * zScale )
-        );
-        this._addLine(geometry);
+        verticesZX[zx*6] = xOffset;
+        verticesZX[zx*6+1] = 0;
+        verticesZX[zx*6+2] = zx * zScale;
+        verticesZX[zx*6+3] = xOffset + xMax;
+        verticesZX[zx*6+4] = 0;
+        verticesZX[zx*6+5] = zx * zScale;
 
         // zy plane
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-          new THREE.Vector3( xMax + xOffset, 0, zx * zScale ),
-          new THREE.Vector3( xMax + xOffset, yMax, zx * zScale )
-        );
-        this._addLine(geometry);
+        verticesZY[zx*6] = xOffset + xMax;
+        verticesZY[zx*6+1] = 0;
+        verticesZY[zx*6+2] = zx * zScale;
+        verticesZY[zx*6+3] = xOffset + xMax;
+        verticesZY[zx*6+4] = yMax;
+        verticesZY[zx*6+5] = zx * zScale;
       }
-  },
-
-  _addLine : function(geometry) {
-
-      // refactor this to take 2 vectors
-
-      var lineMaterial = new THREE.LineBasicMaterial({
-        color: 0x888888,
-      });
+        
+      bufferGeometryXY.addAttribute( 'position', new THREE.BufferAttribute( verticesXY, 3 ) ); // 3 components per vertice (take 3 chunks from the array at a time)
+      bufferGeometryXZ.addAttribute( 'position', new THREE.BufferAttribute( verticesXZ, 3 ) );
+      bufferGeometryYX.addAttribute( 'position', new THREE.BufferAttribute( verticesYX, 3 ) ); // 3 components per vertice (take 3 chunks from the array at a time)
+      bufferGeometryYZ.addAttribute( 'position', new THREE.BufferAttribute( verticesYZ, 3 ) );
+      bufferGeometryZX.addAttribute( 'position', new THREE.BufferAttribute( verticesZX, 3 ) ); // 3 components per vertice (take 3 chunks from the array at a time)
+      bufferGeometryZY.addAttribute( 'position', new THREE.BufferAttribute( verticesZY, 3 ) );
       
-      var line = new THREE.Line( geometry, lineMaterial);
-      this.axisLines.push(line);
-      this.scene.add(line);
+      var lineXY = new THREE.Line( bufferGeometryXY, lineMaterial, THREE.LinePieces );
+      var lineXZ = new THREE.Line( bufferGeometryXZ, lineMaterial, THREE.LinePieces );
+      var lineYX = new THREE.Line( bufferGeometryYX, lineMaterial, THREE.LinePieces );
+      var lineYZ = new THREE.Line( bufferGeometryYZ, lineMaterial, THREE.LinePieces );
+      var lineZX = new THREE.Line( bufferGeometryZX, lineMaterial, THREE.LinePieces );
+      var lineZY = new THREE.Line( bufferGeometryZY, lineMaterial, THREE.LinePieces );
+      
+      this.scene.add(lineXY);
+      this.scene.add(lineXZ);
+      this.scene.add(lineYX);
+      this.scene.add(lineYZ);
+      this.scene.add(lineZX);
+      this.scene.add(lineZY);
+      this.axisLines.push(lineXY);
+      this.axisLines.push(lineXZ);
+      this.axisLines.push(lineYX);
+      this.axisLines.push(lineYZ);
+      this.axisLines.push(lineZX);
+      this.axisLines.push(lineZY);
   },
 
   _setupXYAxisText : function() {
