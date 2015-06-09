@@ -2,15 +2,17 @@ var PinViz = PinViz || {};
 
 PinViz.Viz = Backbone.View.extend({
 
+  el: '#viz',
   initialize : function() {
     _.bindAll(this, 'render', 'setupScene', '_resetSceneIfNeeded', '_animate', '_setupPlotGeometry', '_setupLights', '_setupAxisLines', '_setupXYAxisText');
     this.tagMeshes = [];
     this.axisLines = [];
     this.axisTextMeshes = [];
+    this.render();
   },
 
   render : function() {
-
+   
     this.scene = new THREE.Scene(); 
  
     this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -27,7 +29,7 @@ PinViz.Viz = Backbone.View.extend({
     this.renderer = new THREE.WebGLRenderer( {antialias : true} );
     this.renderer.setSize( window.innerWidth, window.innerHeight );
     this.renderer.shadowMapEnabled = true;
-
+    
     // inject the WebGL renderer dom element into the backbone view 
     this.$el.html(this.renderer.domElement); 
 
@@ -35,7 +37,7 @@ PinViz.Viz = Backbone.View.extend({
   },
 
   setupScene : function() {
-
+    
     this._setupLights();
     this._setupPlotGeometry();
     this._setupAxisLines();

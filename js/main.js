@@ -6,9 +6,6 @@ $(function(){
   // create our three.js visualization view which will react to model updates
   var viz = new PinViz.Viz({model: vizModel});
 
-  // get the three.js renderer element from the backbone view and append it to document body
-  $('body').append(viz.render().el); // define the backbone view element in the view's initialize method
-
   var request = new XMLHttpRequest();
   request.open('GET', 'pinboard/timeSeries/Nov%2001%202014/May%2022%202015/500');
   request.setRequestHeader('Content-Type', 'application/json');
