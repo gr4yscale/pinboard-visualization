@@ -72,6 +72,9 @@ PinViz.Viz = Backbone.View.extend({
 
   _setupPlotGeometry : function() {
     
+    var splineCurve3 =  new THREE.SplineCurve3();
+    var rectShape = this._rectangleShape(this.model.get('zScale'), 0.25);
+
     for (j = 1; j < this.model.get('tagCount'); j++) {
 
       var pts = [];
@@ -81,15 +84,14 @@ PinViz.Viz = Backbone.View.extend({
         pts.push(new THREE.Vector3((i * this.model.get('xScale')) + this.model.get('xOffset'), postCount, (j * this.model.get('zScale')))); // silly magic numbers to position scene correctly. fix later.
       }
 
-      var spline =  new THREE.SplineCurve3( pts );
+      splineCurve3.points = pts;
 
       var extrudeSettings = {
-        steps			: 2000,
+        steps			: 800,
         bevelEnabled	: false,
-        extrudePath		: spline
+        extrudePath		: splineCurve3
       };
 
-      var rectShape = this._rectangleShape(this.model.get('zScale'), 0.25);
       var geometry = new THREE.ExtrudeGeometry( rectShape, extrudeSettings );
       var material = new THREE.MeshLambertMaterial( { wireframe: false} );
 
