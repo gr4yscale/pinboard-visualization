@@ -15,9 +15,9 @@ PinViz.Viz = Backbone.View.extend({
    
     this.scene = new THREE.Scene(); 
  
-    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    this.camera.position.x = 50;
-    this.camera.position.y = 25;
+    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
+    this.camera.position.x = 0;
+    this.camera.position.y = 20;
     this.camera.position.z = 157;
     this.camera.rotation.x = -0.08246939570769404;
     this.camera.rotation.y = -0.6113956566440716;
@@ -81,8 +81,8 @@ PinViz.Viz = Backbone.View.extend({
 
       var pts = [];
 
-      for (i = 0; i < this.model.get('sampleCount'); i++) { 
-        var postCount = this.model.get('timeSeriesData').timeSeries[i+1][j];
+      for (i = 0; i < this.model.get('sampleCount'); i = i + this.model.get('daysPerInterval')) {
+        var postCount = this.model.get('timeSeriesData').timeSeries[i][j];
         pts.push(new THREE.Vector3((i * this.model.get('xScale')) + this.model.get('xOffset'), postCount, (j * this.model.get('zScale')))); // silly magic numbers to position scene correctly. fix later.
       }
 
@@ -109,22 +109,29 @@ PinViz.Viz = Backbone.View.extend({
   _setupLights : function() {
 
       var directionalLightAbove = new THREE.DirectionalLight("#ffffff");
-      directionalLightAbove.position.set(0, 1000, 600);
+      var xMax = this.model.get('xMax');
+      var yMax = this.model.get('yMax');
+      var zMax = this.model.get('zMax');
+      var xOffset = this.model.get('xOffset');
+
+      // confusingly, x for the camera and lights is what i consider to be z on the graph...
+      directionalLightAbove.position.set(0, yMax, xMax * 4.0);
       directionalLightAbove.castShadow = true;
-      directionalLightAbove.shadowCameraNear = 2;
-      directionalLightAbove.shadowCameraFar = 2000;
-      directionalLightAbove.shadowCameraLeft = -2000;
-      directionalLightAbove.shadowCameraRight = 2000;
-      directionalLightAbove.shadowCameraTop = 2000;
-      directionalLightAbove.shadowCameraBottom = -2000;
+      directionalLightAbove.shadowCameraNear = 1;
+      directionalLightAbove.shadowCameraFar = 200;
+      directionalLightAbove.shadowCameraLeft = -xMax / 2.0;
+      directionalLightAbove.shadowCameraRight = xMax / 2.0;
+      directionalLightAbove.shadowCameraTop = 40;
+      directionalLightAbove.shadowCameraBottom = -40;
 
       directionalLightAbove.distance = 0;
-      directionalLightAbove.intensity = 1.6;
+      directionalLightAbove.intensity = 2.6;
       directionalLightAbove.shadowMapHeight = 1024;
       directionalLightAbove.shadowMapWidth = 1024;
+      directionalLightAbove.shadowCameraVisible = true;
 
       var directionalLightUnderneath = new THREE.DirectionalLight("#ffffff");
-      directionalLightUnderneath.position.set(0, -1000, 300);
+      directionalLightUnderneath.position.set(this.model.get('xOffset'), -1000, 0);
       directionalLightUnderneath.castShadow = true;
       directionalLightUnderneath.shadowCameraNear = 2;
       directionalLightUnderneath.shadowCameraFar = 2000;

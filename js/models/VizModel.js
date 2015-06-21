@@ -3,6 +3,7 @@ var VizModel = Backbone.Model.extend({
     timeSeriesData : null,
     shouldReloadScene : false,
     sampleCount : 200,
+    daysPerInterval : 1,
     tagCount : 40, //use data["tags"].length for number of tags in future
     zScale : 4.0,
     xScale : 1.0,
