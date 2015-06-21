@@ -1,41 +1,13 @@
-//require (['js/lib/jquery-2.1.4.js'])
+require.config({
+  paths: {
+    jquery: 'lib/jquery-2.1.4',
+    underscore: 'lib/underscore',
+    backbone: 'lib/backbone'
+  }
+});
 
-$(function(){
- 
-  var vizModel = new VizModel();
-
-  // create our three.js visualization view which will react to model updates
-  var viz = new PinViz.Viz({model: vizModel});
-
-  var request = new XMLHttpRequest();
-  request.open('GET', 'pinboard/timeSeries/Feb%2001%202014/July%2028%202015/60/false/7');
-  request.setRequestHeader('Content-Type', 'application/json');
-
-  request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-
-          var theData = JSON.parse(request.responseText);
-          var sampleCount = theData['sampleCount'];
-          var xOffset = -(sampleCount / 2);
-          var xMax = vizModel.get('xScale') * sampleCount;
-          var tagCount = theData['tags'].length;
-          var zMax = (tagCount - 1) * vizModel.get('zScale');
-
-          vizModel.set('timeSeriesData', theData);
-          vizModel.set('sampleCount', theData['sampleCount']);
-          vizModel.set('xOffset', xOffset);
-          vizModel.set('xMax', xMax);
-          vizModel.set('tagCount', tagCount);
-          vizModel.set('zMax', zMax);
-          vizModel.set('daysPerInterval', theData['daysPerInterval']);
-
-          viz.setupScene();
-          
-          //theData.tags.forEach(function(tag) {
-            //tagsList.add( {name : tag} );
-          //});
-      }
-  };
-
-  request.send();
+require(['jquery', 'js/app.js'], function($, App) {
+  $(function(){
+    App.init();
+  });
 });
