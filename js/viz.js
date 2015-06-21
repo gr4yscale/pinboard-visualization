@@ -76,14 +76,17 @@ PinViz.Viz = Backbone.View.extend({
     
     var splineCurve3 =  new THREE.SplineCurve3();
     var rectShape = this._rectangleShape(this.model.get('zScale'), 0.25);
+    var x, y, z;
 
     for (j = 1; j < this.model.get('tagCount'); j++) {
 
       var pts = [];
 
       for (i = 0; i < this.model.get('sampleCount'); i = i + this.model.get('daysPerInterval')) {
-        var postCount = this.model.get('timeSeriesData').timeSeries[i][j];
-        pts.push(new THREE.Vector3((i * this.model.get('xScale')) + this.model.get('xOffset'), postCount, (j * this.model.get('zScale')))); // silly magic numbers to position scene correctly. fix later.
+        x = (i * this.model.get('xScale')) + this.model.get('xOffset');
+        y = this.model.get('timeSeriesData').timeSeries[i][j];
+        z = (j * this.model.get('zScale') - (this.model.get('zMax') / 2.0));
+        pts.push(new THREE.Vector3(x, y, z));
       }
 
       splineCurve3.points = pts;
@@ -106,6 +109,7 @@ PinViz.Viz = Backbone.View.extend({
     }
   },
 
+
   _setupLights : function() {
 
       var directionalLightAbove = new THREE.DirectionalLight("#ffffff");
@@ -115,35 +119,37 @@ PinViz.Viz = Backbone.View.extend({
       var xOffset = this.model.get('xOffset');
 
       // confusingly, x for the camera and lights is what i consider to be z on the graph...
-      directionalLightAbove.position.set(0, yMax, xMax * 4.0);
+      directionalLightAbove.position.set(0, yMax, 0);
       directionalLightAbove.castShadow = true;
       directionalLightAbove.shadowCameraNear = 1;
-      directionalLightAbove.shadowCameraFar = 200;
-      directionalLightAbove.shadowCameraLeft = -xMax / 2.0;
-      directionalLightAbove.shadowCameraRight = xMax / 2.0;
-      directionalLightAbove.shadowCameraTop = 40;
-      directionalLightAbove.shadowCameraBottom = -40;
+      directionalLightAbove.shadowCameraFar = yMax * 2.0;
+      directionalLightAbove.shadowCameraLeft = -zMax / 2.0;
+      directionalLightAbove.shadowCameraRight = zMax / 2.0;
+      directionalLightAbove.shadowCameraTop = xMax / 2.0;
+      directionalLightAbove.shadowCameraBottom = -xMax / 2.0;
 
       directionalLightAbove.distance = 0;
-      directionalLightAbove.intensity = 2.6;
+      directionalLightAbove.intensity = 1.0;
       directionalLightAbove.shadowMapHeight = 1024;
       directionalLightAbove.shadowMapWidth = 1024;
-      directionalLightAbove.shadowCameraVisible = true;
+
 
       var directionalLightUnderneath = new THREE.DirectionalLight("#ffffff");
-      directionalLightUnderneath.position.set(this.model.get('xOffset'), -1000, 0);
-      directionalLightUnderneath.castShadow = true;
-      directionalLightUnderneath.shadowCameraNear = 2;
-      directionalLightUnderneath.shadowCameraFar = 2000;
-      directionalLightUnderneath.shadowCameraLeft = -2000;
-      directionalLightUnderneath.shadowCameraRight = 2000;
-      directionalLightUnderneath.shadowCameraTop = 2000;
-      directionalLightUnderneath.shadowCameraBottom = -2000;
+      directionalLightUnderneath.position.set(0, -yMax, 0);
+      directionalLightUnderneath.castShadow = false;
+      directionalLightUnderneath.shadowCameraNear = 1;
+      directionalLightUnderneath.shadowCameraFar = yMax * 2.0;
+      directionalLightUnderneath.shadowCameraLeft = -zMax / 2.0;
+      directionalLightUnderneath.shadowCameraRight = zMax / 2.0;
+      directionalLightUnderneath.shadowCameraTop = xMax / 2.0;
+      directionalLightUnderneath.shadowCameraBottom = -xMax / 2.0;
 
       directionalLightUnderneath.distance = 0;
-      directionalLightUnderneath.intensity = 0.6;
+      directionalLightUnderneath.intensity = 0.4;
       directionalLightUnderneath.shadowMapHeight = 1024;
       directionalLightUnderneath.shadowMapWidth = 1024;
+
+      directionalLightUnderneath.shadowCameraVisible = true;
 
       this.scene.add( directionalLightAbove );
       this.scene.add( directionalLightUnderneath );
@@ -183,18 +189,18 @@ PinViz.Viz = Backbone.View.extend({
         // xy plane
         verticesXY[x*6] = (x * xScale) + xOffset; // we multiply by 6 because we have 2 points for each line with 3 components per point
         verticesXY[x*6+1] = 0;
-        verticesXY[x*6+2] = 0;
+        verticesXY[x*6+2] = -(zMax / 2.0);
         verticesXY[x*6+3] = (x * xScale) + xOffset;
         verticesXY[x*6+4] = yMax;
-        verticesXY[x*6+5] = 0;
+        verticesXY[x*6+5] = -(zMax / 2.0);
 
         // xz plane
         verticesXZ[x*6] = (x * xScale) + xOffset;
         verticesXZ[x*6+1] = 0;
-        verticesXZ[x*6+2] = 0;
+        verticesXZ[x*6+2] = -(zMax / 2.0);
         verticesXZ[x*6+3] = (x * xScale) + xOffset;
         verticesXZ[x*6+4] = 0;
-        verticesXZ[x*6+5] = zMax;
+        verticesXZ[x*6+5] = zMax / 2.0;
       }
 
       for (y = 0; y < yMax; y++) {
@@ -202,18 +208,18 @@ PinViz.Viz = Backbone.View.extend({
         // yx plane
         verticesYX[y*6] = xOffset;
         verticesYX[y*6+1] = y;
-        verticesYX[y*6+2] = 0;
+        verticesYX[y*6+2] = -(zMax / 2.0);
         verticesYX[y*6+3] = xMax + xOffset;
         verticesYX[y*6+4] = y;
-        verticesYX[y*6+5] = 0;
+        verticesYX[y*6+5] = -(zMax / 2.0);
 
         // yz plane
         verticesYZ[y*6] = xMax + xOffset;
         verticesYZ[y*6+1] = y;
-        verticesYZ[y*6+2] = 0;
+        verticesYZ[y*6+2] = -(zMax / 2.0);
         verticesYZ[y*6+3] = xMax + xOffset;
         verticesYZ[y*6+4] = y;
-        verticesYZ[y*6+5] = zMax;
+        verticesYZ[y*6+5] = zMax / 2.0;
       }
 
       for (zx = 0; zx < tagCount; zx++) {
@@ -221,18 +227,18 @@ PinViz.Viz = Backbone.View.extend({
         // zx plane
         verticesZX[zx*6] = xOffset;
         verticesZX[zx*6+1] = 0;
-        verticesZX[zx*6+2] = zx * zScale;
+        verticesZX[zx*6+2] = (zx * zScale) / 2.0;
         verticesZX[zx*6+3] = xOffset + xMax;
         verticesZX[zx*6+4] = 0;
-        verticesZX[zx*6+5] = zx * zScale;
+        verticesZX[zx*6+5] = (zx * zScale) / 2.0;
 
         // zy plane
         verticesZY[zx*6] = xOffset + xMax;
         verticesZY[zx*6+1] = 0;
-        verticesZY[zx*6+2] = zx * zScale;
+        verticesZY[zx*6+2] = (zx * zScale) / 2.0;
         verticesZY[zx*6+3] = xOffset + xMax;
         verticesZY[zx*6+4] = yMax;
-        verticesZY[zx*6+5] = zx * zScale;
+        verticesZY[zx*6+5] = (zx * zScale) / 2.0;
       }
         
       bufferGeometryXY.addAttribute( 'position', new THREE.BufferAttribute( verticesXY, 3 ) ); // 3 components per vertice (take 3 chunks from the array at a time)
