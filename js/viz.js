@@ -23,8 +23,8 @@ define([
       this.camera.position.x = 0;
       this.camera.position.y = 20;
       this.camera.position.z = 157;
-      this.camera.rotation.x = -0.08246939570769404;
-      this.camera.rotation.y = -0.6113956566440716;
+      this.camera.rotation.x = -0.68246939570769404;
+      this.camera.rotation.y = -0.613956566440716;
       this.camera.rotation.z = -0.047410390316570454;
 
       this.controls = new THREE.OrbitControls( this.camera );
@@ -88,7 +88,7 @@ define([
 
         for (i = 0; i < this.model.get('sampleCount'); i = i + this.model.get('daysPerInterval')) {
           x = (i * this.model.get('xScale')) + this.model.get('xOffset');
-          y = this.model.get('timeSeriesData').timeSeries[i][j];
+          y = this.model.get('timeSeriesData').timeSeries[i][j] * 3.0;
           z = (j * this.model.get('zScale') - (this.model.get('zMax') / 2.0));
           pts.push(new THREE.Vector3(x, y, z));
         }
@@ -96,7 +96,7 @@ define([
         splineCurve3.points = pts;
 
         var extrudeSettings = {
-          steps			: 800,
+          steps			: 1200,
           bevelEnabled	: false,
           extrudePath		: splineCurve3
         };
@@ -123,10 +123,10 @@ define([
         var xOffset = this.model.get('xOffset');
 
         // confusingly, x for the camera and lights is what i consider to be z on the graph...
-        directionalLightAbove.position.set(0, yMax, 0);
+        directionalLightAbove.position.set(-xMax * 6.0, yMax * 10.0, zMax * 4.0);
         directionalLightAbove.castShadow = true;
         directionalLightAbove.shadowCameraNear = 1;
-        directionalLightAbove.shadowCameraFar = yMax * 2.0;
+        directionalLightAbove.shadowCameraFar = xMax * 10.0;
         directionalLightAbove.shadowCameraLeft = -zMax / 2.0;
         directionalLightAbove.shadowCameraRight = zMax / 2.0;
         directionalLightAbove.shadowCameraTop = xMax / 2.0;
@@ -138,6 +138,8 @@ define([
         directionalLightAbove.shadowMapWidth = 1024;
 
 
+        directionalLightAbove.shadowCameraVisible = false;
+        
         var directionalLightUnderneath = new THREE.DirectionalLight("#ffffff");
         directionalLightUnderneath.position.set(0, -yMax, 0);
         directionalLightUnderneath.castShadow = false;
@@ -153,7 +155,7 @@ define([
         directionalLightUnderneath.shadowMapHeight = 1024;
         directionalLightUnderneath.shadowMapWidth = 1024;
 
-        directionalLightUnderneath.shadowCameraVisible = true;
+        directionalLightUnderneath.shadowCameraVisible = false;
 
         this.scene.add( directionalLightAbove );
         this.scene.add( directionalLightUnderneath );

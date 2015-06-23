@@ -10,7 +10,7 @@ define([
     var viz = new Viz({model: vizModel});
 
     var request = new XMLHttpRequest();
-    request.open('GET', 'pinboard/timeSeries/Feb%2001%202014/July%2028%202015/60/false/7');
+    request.open('GET', 'pinboard/timeSeries/Jan%2001%202015/Jun%2028%202015/30/false/7');
     request.setRequestHeader('Content-Type', 'application/json');
 
     request.onload = function() {
