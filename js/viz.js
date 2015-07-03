@@ -8,10 +8,15 @@ define([
 
     el: '#viz',
     initialize : function() {
-      _.bindAll(this, 'render', 'setupScene', '_resetSceneIfNeeded', '_animate', '_setupPlotGeometry', '_setupLights', '_setupAxisLines', '_setupXYAxisText');
+      _.bindAll(this, 'render', 'setupScene', '_resetSceneIfNeeded', '_animate', '_setupPlotGeometry', '_setupLights', '_setupAxisLines', '_setupXYAxisText', '_onDocumentMouseMove');
       this.tagMeshes = [];
       this.axisLines = [];
       this.axisTextMeshes = [];
+      this.mouse = new THREE.Vector2();
+      this.raycaster = new THREE.Raycaster();
+
+      document.addEventListener( 'mousemove', this._onDocumentMouseMove, false );
+
       this.render();
     },
 
@@ -38,6 +43,14 @@ define([
       this.$el.html(this.renderer.domElement); 
 
       return this;
+    },
+
+    _onDocumentMouseMove : function(event) {
+
+      event.preventDefault();
+
+      this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+      this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     },
 
     setupScene : function() {
@@ -71,8 +84,24 @@ define([
     _animate : function() {
 
       this._resetSceneIfNeeded();
+
       var animate = this._animate;
       requestAnimationFrame(animate);
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+      var intersects = this.raycaster.intersectObjects(this.tagMeshes);
+
+      if (intersects.length > 0) {
+        // only update if we're intersecting a new object
+        if (this.intersected != intersects[0].object) {
+          this.intersected = intersects[0].object;
+          this.intersected.material.emissive.setHex(0xffffff);
+        } else {
+          this.intersected = null;
+        }
+      }
+
       this.renderer.render(this.scene, this.camera);
     },
 
