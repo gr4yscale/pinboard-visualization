@@ -1,13 +1,16 @@
 define([
   'models/VizModel',
-  'viz'
-], function(VizModel, Viz){
+  'viz',
+  'views/OverlayView'
+], function(VizModel, Viz, OverlayView){
 
   var init = function() {
   
     var vizModel = new VizModel();
 
     var viz = new Viz({model: vizModel});
+
+    var overlayView = new OverlayView();
 
     var request = new XMLHttpRequest();
     request.open('GET', 'pinboard/timeSeries/Jan%2001%202015/Jun%2028%202015/30/false/7');

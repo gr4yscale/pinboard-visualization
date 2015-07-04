@@ -7,6 +7,7 @@
 			.tagView { color: #FFFFFF; }
       .options { display:inline-block; margin-bottom: 20px; color: #FFFFFF; }
 			#tag-selection-overlay { position: absolute; top: 0; left: 0; width: 160; height: 100%; vertical-align: middle; z-index: 10; background-color: rgba(0,0,0,0.5);}
+			#overlay { position: absolute; top: 0; right: 0; width: 160; height: 20%; z-index: 10; background-color: rgba(0,0,0,0.5); color: #ffffff}
 		</style>
 	</head>
 	<body>
@@ -31,6 +32,8 @@
       -->
 
     <div id="viz"></div>
+
+    <div id="tag-selection-overlay"></div>
 
 		<script type="text/template" id="tag-list-item-tmpl">
 		  <div style="display:inline-block">
