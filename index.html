@@ -16,31 +16,24 @@
 		<script src="js/lib/OrbitControls.js"></script>
 		
     <script src="js/params.js"></script>
-		<script src="js/fonts/optimer_regular.typeface.js"></script>
-		<script src="js/fonts/optimer_bold.typeface.js"></script>
-
-      <!--
-		<div id="tag-selection-overlay">
-
+ 
+		<script type="text/template" id="tag-list-item-tmpl">
+		  <div style="display:inline-block">
+        <input type="checkbox" id="checkbox_<%=name%>" checked="<%=checked%>"/>
+        <label for="checkbox_<%=name%>"><%=name%></label>
+      </div>
+		</script>
+    
+    <div id="tag-selection-overlay">
       <div class="options">
         <input type="checkbox" id="cumulative_bool" />
         <label for="cumulative_bool">cumulative?</label>
       </div>
 
       <div class="tag-selection-list"></div>
-		</div>
-      -->
-
+    </div>
+      
     <div id="viz"></div>
-
-    <div id="tag-selection-overlay"></div>
-
-		<script type="text/template" id="tag-list-item-tmpl">
-		  <div style="display:inline-block">
-        <input type="checkbox" id="checkbox_<%=name%> checked="<%=checked%>" />
-        <label for="checkbox_<%=name%>"><%=name%></label>
-      </div>
-		</script>
 
     <script data-main="js/main" src="js/lib/require.min.js"></script>
 	</body>
