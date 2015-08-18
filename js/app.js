@@ -1,9 +1,11 @@
 define([
+  'underscore',
   'api_client',
   'models/VizModel',
   'viz',
-  'views/OverlayView'
-], function(ApiClient, VizModel, Viz, OverlayView){
+  'views/OverlayView',
+  'tag-selection'
+], function(_, ApiClient, VizModel, Viz, OverlayView, TagSelection){
 
   var init = function() {
   
@@ -15,10 +17,10 @@ define([
 
     ApiClient.fetchData(function(error, theData) {
 
-      var sampleCount = theData['sampleCount'];
+      var sampleCount = theData.sampleCount;
       var xOffset = -(sampleCount / 2);
       var xMax = vizModel.get('xScale') * sampleCount;
-      var tagCount = theData['tags'].length;
+      var tagCount = theData.tags.length;
       var zMax = (tagCount - 1) * vizModel.get('zScale');
 
       vizModel.set('timeSeriesData', theData);
@@ -27,9 +29,15 @@ define([
       vizModel.set('xMax', xMax);
       vizModel.set('tagCount', tagCount);
       vizModel.set('zMax', zMax);
-      vizModel.set('daysPerInterval', theData['daysPerInterval']);
+      vizModel.set('daysPerInterval', theData.daysPerInterval);
 
       viz.setupScene();
+
+      var possibleTags = _.map(theData.tags, function(tag) {
+        return { name : tag };
+      });
+
+      TagSelection.setPossibleTags(possibleTags);
     });
   };
 
