@@ -4,8 +4,8 @@ define([
   'models/VizModel',
   'viz',
   'views/OverlayView',
-  'tag-selection'
-], function(_, ApiClient, VizModel, Viz, OverlayView, TagSelection){
+  'controllers/TagSelectionController'
+], function(_, ApiClient, VizModel, Viz, OverlayView, TagSelectionController){
 
   var init = function() {
   
@@ -37,7 +37,7 @@ define([
         return { name : tag };
       });
 
-      TagSelection.setPossibleTags(possibleTags);
+      TagSelectionController.setPossibleTags(possibleTags);
     });
   };
 
