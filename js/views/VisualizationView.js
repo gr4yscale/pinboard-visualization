@@ -13,9 +13,9 @@ define([
       this.axisLines = [];
       this.axisTextMeshes = [];
       this.mouse = new THREE.Vector2();
-      this.raycaster = new THREE.Raycaster();
+      //this.raycaster = new THREE.Raycaster();
 
-      document.addEventListener( 'mousemove', this._onDocumentMouseMove, false );
+      //document.addEventListener( 'mousemove', this._onDocumentMouseMove, false );
 
       this.render();
     },
@@ -32,12 +32,12 @@ define([
       this.camera.rotation.y = -0.613956566440716;
       this.camera.rotation.z = -0.047410390316570454;
 
-      this.controls = new THREE.OrbitControls( this.camera );
-      this.controls.damping = 0.2;
-
       this.renderer = new THREE.WebGLRenderer( {antialias : true} );
       this.renderer.setSize( window.innerWidth, window.innerHeight );
       this.renderer.shadowMapEnabled = true;
+      
+      this.controls = new THREE.OrbitControls( this.camera); 
+      this.controls.damping = 0.2;
       
       // inject the WebGL renderer dom element into the backbone view 
       this.$el.html(this.renderer.domElement); 
@@ -88,19 +88,19 @@ define([
       var animate = this._animate;
       requestAnimationFrame(animate);
 
-      this.raycaster.setFromCamera(this.mouse, this.camera);
+      //this.raycaster.setFromCamera(this.mouse, this.camera);
 
-      var intersects = this.raycaster.intersectObjects(this.tagMeshes);
+      //var intersects = this.raycaster.intersectObjects(this.tagMeshes);
 
-      if (intersects.length > 0) {
-        // only update if we're intersecting a new object
-        if (this.intersected != intersects[0].object) {
-          this.intersected = intersects[0].object;
-          this.intersected.material.emissive.setHex(0xffffff);
-        } else {
-          this.intersected = null;
-        }
-      }
+      //if (intersects.length > 0) {
+        //// only update if we're intersecting a new object
+        //if (this.intersected != intersects[0].object) {
+          //this.intersected = intersects[0].object;
+          //this.intersected.material.emissive.setHex(0xffffff);
+        //} else {
+          //this.intersected = null;
+        //}
+      //}
 
       this.renderer.render(this.scene, this.camera);
     },
@@ -291,11 +291,11 @@ define([
         var lineZY = new THREE.Line( bufferGeometryZY, lineMaterial, THREE.LinePieces );
         
         this.scene.add(lineXY);
-        this.scene.add(lineXZ);
+        //this.scene.add(lineXZ;
         this.scene.add(lineYX);
         this.scene.add(lineYZ);
-        this.scene.add(lineZX);
-        this.scene.add(lineZY);
+        //this.scene.add(lineZX);
+        //this.scene.add(lineZY);
         this.axisLines.push(lineXY);
         this.axisLines.push(lineXZ);
         this.axisLines.push(lineYX);

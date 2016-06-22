@@ -2,16 +2,15 @@ define([
   'underscore',
   'api_client',
   'models/VizModel',
-  'viz',
+  'views/VisualizationView',
   'views/OverlayView',
   'controllers/TagSelectionController'
-], function(_, ApiClient, VizModel, Viz, OverlayView, TagSelectionController){
+], function(_, ApiClient, VizModel, VisualizationView, OverlayView, TagSelectionController){
 
   var init = function() {
   
     var vizModel = new VizModel();
-
-    var viz = new Viz({model: vizModel});
+    var visualizationView = new VisualizationView({model: vizModel});
 
     var overlayView = new OverlayView();
 
@@ -31,7 +30,7 @@ define([
       vizModel.set('zMax', zMax);
       vizModel.set('daysPerInterval', theData.daysPerInterval);
 
-      viz.setupScene();
+      visualizationView.setupScene();
 
       var possibleTags = _.map(theData.tags, function(tag) {
         return { name : tag };
