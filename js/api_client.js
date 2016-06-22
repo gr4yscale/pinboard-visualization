@@ -1,9 +1,9 @@
 define({
 
-  startDate : 'Jan%2001%202015',
-  endDate : 'Mar%2028%202015',
-  numTags : 40,
-  cumulatie : 'false',
+  startDate : 'Jan%2001%202014',
+  endDate : 'Nov%2028%202015',
+  numTags : 50,
+  cumulative : 'false',
   interval : 7,
 
   fetchData : function fetchData(cb) {
