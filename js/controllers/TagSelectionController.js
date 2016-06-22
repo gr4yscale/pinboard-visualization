@@ -15,6 +15,10 @@ define([
     possibleTags.set(tagsData);
   };
 
+  var bindEvents = function() {
+  
+  };
+
   return {
     possibleTags : possibleTags,
     selectedTags : selectedTags,
